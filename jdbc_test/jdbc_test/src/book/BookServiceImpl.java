@@ -24,11 +24,11 @@ public class BookServiceImpl implements BookService {
 				break;
 			case 2 :
 				System.out.println("2. 도서 정보 수정");
-				//updateMember();
+				updateBook();
 				break;
 			case 3 :
 				System.out.println("3. 도서 정보 삭제");
-				//deleteMember();
+				deleteBook();
 				break;
 			case 4 :
 				System.out.println("4. 도서 정보 출력(도서명)");
@@ -102,6 +102,7 @@ public class BookServiceImpl implements BookService {
 	}
 	
 	public void printAllBooks() {
+		
 		List<HashMap<String, Object>> bookList = new ArrayList();
 		bookList = bookDAO.printAllBooks();
 		System.out.println("도서명\t저자\t출판사\t등록일");
@@ -127,6 +128,50 @@ public class BookServiceImpl implements BookService {
 			System.out.print(bookList.get(i).get("book_author")+"\t"); 
 			System.out.print(bookList.get(i).get("book_publisher")+"\t");
 			System.out.println(bookList.get(i).get("create_date"));
+		}
+	}
+	
+	public void deleteBook() {
+		System.out.println("도서명을 입력하세요>>>>>");
+		sc.nextLine();
+		String title = sc.nextLine();
+		
+		int resultChk = 0;
+		resultChk = bookDAO.deleteBook(title);
+		if(resultChk > 0) {
+			System.out.println("도서가 삭제되었습니다.");
+		}else {
+			System.out.println("도서 삭제에 실패하였습니다.");
+		}
+	}
+	
+	public void updateBook() {
+		System.out.println("도서명을 입력하세요>>>>>");
+		sc.nextLine();
+		String title = sc.nextLine();
+		
+		List<HashMap<String, Object>> bookList = new ArrayList();
+		bookList = bookDAO.printSearchBooks(title);
+		System.out.println("도서ID\t도서명\t저자\t출판사\t등록일");
+		for(int i =0; i<bookList.size(); i++) {
+			System.out.print(bookList.get(i).get("book_id")+"\t");
+			System.out.print(bookList.get(i).get("book_title")+"\t");
+			System.out.print(bookList.get(i).get("book_author")+"\t"); 
+			System.out.print(bookList.get(i).get("book_publisher")+"\t");
+			System.out.println(bookList.get(i).get("create_date"));
+		}
+		System.out.println("수정할 도서의 순번을 입력하세요>>>>>");
+		int num = sc.nextInt();
+		int bookId = Integer.parseInt(bookList.get(num-1).get("book_id").toString());
+		System.out.println("변경될 도서명을 입력하세요>>>>");
+		sc.nextLine();
+		String updateTitle = sc.nextLine();
+		int resultChk = 0;
+		resultChk = bookDAO.updateBook(bookId, updateTitle);
+		if(resultChk > 0) {
+			System.out.println("도서가 수정되었습니다.");
+		}else {
+			System.out.println("도서 수정에 실패하였습니다.");
 		}
 	}
 

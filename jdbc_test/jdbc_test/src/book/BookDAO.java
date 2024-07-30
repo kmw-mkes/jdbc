@@ -161,7 +161,7 @@ public class BookDAO {
 	}
 	
 	public List<HashMap<String, Object>> printSearchBooks(String title){
-List<HashMap<String, Object>> bookList = new ArrayList();
+		List<HashMap<String, Object>> bookList = new ArrayList();
 		
 		try {
 			Class.forName(driver);
@@ -178,19 +178,18 @@ List<HashMap<String, Object>> bookList = new ArrayList();
 		}
 		
 		try {
-			String sql = "SELECT book_id,\r\n"
-					+ "    book_title,\r\n"
-					+ "    book_price,\r\n"
-					+ "    book_author,\r\n"
-					+ "    book_publisher,\r\n"
-					+ "    book_pubYear,\r\n"
-					+ "    book_isbn,\r\n"
-					+ "    book_page,\r\n"
-					+ "    create_date,\r\n"
-					+ "    update_date\r\n"
-					+ "FROM tb_book_info\r\n"
-					+ "WHERE book_title like concat('%', ?, '%');\r\n"
-					+ "";
+			String sql = "SELECT book_id,\n"
+					+ "    book_title,\n"
+					+ "    book_price,\n"
+					+ "    book_author,\n"
+					+ "    book_publisher,\n"
+					+ "    book_pubYear,\n"
+					+ "    book_isbn,\n"
+					+ "    book_page,\n"
+					+ "    create_date,\n"
+					+ "    update_date\n"
+					+ "FROM tb_book_info\n"
+					+ "WHERE book_title like concat('%', ?, '%');";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, title);
@@ -236,6 +235,100 @@ List<HashMap<String, Object>> bookList = new ArrayList();
 		}
 		
 		return bookList;
+	}
+	
+	public int deleteBook(String title) {
+		int resultChk = 0;
+		
+		try {
+			Class.forName(driver);
+			conn = DriverManager.getConnection(db_url, "root", "1234");
+			if(conn != null) {
+				System.out.println("접속성공");
+			}
+		}catch(ClassNotFoundException e) {
+			System.out.println("드라이버 로드 실패");
+			e.printStackTrace();
+		}catch(SQLException e) {
+			System.out.println("접속 실패");
+			e.printStackTrace();
+		}
+		
+		try {
+			String sql = "DELETE FROM tb_book_info\n"
+					+ "WHERE book_title = ?;";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, title);
+			
+			resultChk = pstmt.executeUpdate();
+			
+		}catch (SQLException e) {
+			// TODO: handle exception
+			System.out.println("error :" + e);
+		}finally {
+			try {
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(conn != null && conn.isClosed()) {
+					conn.close();
+				}
+			
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return resultChk;
+	}
+	
+	public int updateBook(int bookId, String updateTitle) {
+int resultChk = 0;
+		
+		try {
+			Class.forName(driver);
+			conn = DriverManager.getConnection(db_url, "root", "1234");
+			if(conn != null) {
+				System.out.println("접속성공");
+			}
+		}catch(ClassNotFoundException e) {
+			System.out.println("드라이버 로드 실패");
+			e.printStackTrace();
+		}catch(SQLException e) {
+			System.out.println("접속 실패");
+			e.printStackTrace();
+		}
+		
+		try {
+			String sql = "UPDATE tb_book_info\n"
+					+ "SET book_title = ?\n"
+					+ "WHERE book_id = ?;";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, updateTitle);
+			pstmt.setInt(2, bookId);
+			
+			resultChk = pstmt.executeUpdate();
+			
+		}catch (SQLException e) {
+			// TODO: handle exception
+			System.out.println("error :" + e);
+		}finally {
+			try {
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(conn != null && conn.isClosed()) {
+					conn.close();
+				}
+			
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return resultChk;
 	}
 	
 }
