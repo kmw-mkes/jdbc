@@ -163,6 +163,7 @@ public class StudentServiceImpl implements StudentService{
 	// 학생정보 수정
 	public void updateStudent() {
 		System.out.print("정보를 수정할 학생의 이름을 입력해주세요>>>>>");
+		sc.nextLine();
 		String studentName = sc.nextLine();
 		List<HashMap<String, Object>> studentList = new ArrayList();
 		studentList = studentDAO.printSearchStudent(studentName);
@@ -175,6 +176,25 @@ public class StudentServiceImpl implements StudentService{
 		System.out.println("정보를 수정할 학생을 선택해주세요>>>>");
 		int choice = sc.nextInt();
 		int studentIdx = Integer.parseInt(studentList.get(choice-1).get("studentIdx").toString());
+		
+		System.out.println("수정할 학생 정보를 선택해주세요.");
+		System.out.println("이름 : 1, 학교 : 2, 학년 : 3, 연락처 : 4, 주소 : 5");
+		int updateChoice = sc.nextInt();
+		System.out.println("변경할 내용을 입력하세요>>>>>");
+		sc.nextLine();
+		String updateContents = sc.nextLine();
+		HashMap<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("studentIdx", studentIdx);
+		paramMap.put("updateChoice", updateChoice);
+		paramMap.put("updateContents", updateContents);
+		
+		int resultChk = 0;
+		resultChk = studentDAO.updateStudent(paramMap);
+		if(resultChk > 0) {
+			System.out.println("수정완료");
+		}else {
+			System.out.println("수정실패");
+		}
 	}
 	
 	// 학생정보 삭제
