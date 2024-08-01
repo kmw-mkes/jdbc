@@ -79,6 +79,7 @@ public class StudentServiceImpl implements StudentService{
 	// 학생 정보 등록
 	public void insertStudent() {
 		System.out.println("학생 이름을 입력하세요.");
+		sc.nextLine();
 		String studentName = sc.nextLine();
 		
 		System.out.println("학년을 입력하세요.");
@@ -179,6 +180,7 @@ public class StudentServiceImpl implements StudentService{
 	// 학생정보 삭제
 	public void deleteStudent() {
 		System.out.print("정보를 삭제할 학생의 이름을 입력해주세요>>>>>");
+		sc.nextLine();
 		String studentName = sc.nextLine();
 		List<HashMap<String, Object>> studentList = new ArrayList();
 		studentList = studentDAO.printSearchStudent(studentName);
@@ -191,6 +193,15 @@ public class StudentServiceImpl implements StudentService{
 		System.out.println("정보를 삭제할 학생을 선택해주세요>>>>");
 		int choice = sc.nextInt();
 		int studentIdx = Integer.parseInt(studentList.get(choice-1).get("studentIdx").toString());
+		
+		int resultChk = 0;
+		resultChk = studentDAO.deleteStudent(studentIdx);
+		
+		if(resultChk > 0) {
+			System.out.println("삭제완료");
+		}else {
+			System.out.println("삭제실패");
+		}
 	}
 	
 	// 학생 성적 수정
@@ -257,11 +268,35 @@ public class StudentServiceImpl implements StudentService{
 	// 학생 정보 전체 검색
 	public void printAllStudent() {
 		System.out.println("학교명\t\t학생이름\t학년\t주소\t연락처");
+		List<HashMap<String, Object>> list = new ArrayList();
+		list = studentDAO.printAllStudent();
+		for(int i=0; i<list.size(); i++) {
+			System.out.print(list.get(i).get("studentSchool")+"\t");
+			System.out.print(list.get(i).get("studentName")+"\t");
+			System.out.print(list.get(i).get("studentGrade")+"\t");
+			System.out.print(list.get(i).get("studentAddr")+"\t");
+			System.out.println(list.get(i).get("studentPhone"));
+		}
 	}
 	
-	// 핛생 정보 이름으로 검색
+	// 학생 정보 이름으로 검색
 	public void printSearchStudent() {
+		
+		System.out.print("검색할 학생의 이름을 입력해주세요>>>>>");
+		sc.nextLine();
+		String studentName = sc.nextLine();
+		// 학생정보 검색 -> DB
+		List<HashMap<String, Object>> list = new ArrayList();
+		list = studentDAO.printSearchStudent(studentName);
+		
 		System.out.println("학교명\t\t학생이름\t학년\t주소\t연락처");
+		for(int i=0; i<list.size(); i++) {
+			System.out.print(list.get(i).get("studentSchool")+"\t");
+			System.out.print(list.get(i).get("studentName")+"\t");
+			System.out.print(list.get(i).get("studentGrade")+"\t");
+			System.out.print(list.get(i).get("studentAddr")+"\t");
+			System.out.println(list.get(i).get("studentPhone"));
+		}
 		
 	}
 
