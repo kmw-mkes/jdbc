@@ -377,6 +377,46 @@ public class StudentDAO {
 	// 학생 성적 수정
 	public int updateScore(int scoreIdx, int updateScore) {
 		int resultChk = 0;
+		// DB 접속
+		try {
+			Class.forName(driver);
+			conn = DriverManager.getConnection(db_url, "root", "1234");
+			if(conn != null) {
+
+			}
+		}catch(ClassNotFoundException e) {
+			System.out.println("드라이버 로드 실패");
+			e.printStackTrace();
+		}catch(SQLException e) {
+			System.out.println("접속 실패");
+			e.printStackTrace();
+		}
+		// 쿼리실행 구간
+		try {
+			String sql = "UPDATE tb_student_score SET score_point = ? WHERE score_idx = ?;";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, updateScore);
+			pstmt.setInt(2, scoreIdx);
+			
+			resultChk = pstmt.executeUpdate();
+			
+		}catch (SQLException e) {
+			// TODO: handle exception
+			System.out.println("error :" + e);
+		}finally {
+			try {
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(conn != null && conn.isClosed()) {
+					conn.close();
+				}
+			
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		return resultChk;
 	}
