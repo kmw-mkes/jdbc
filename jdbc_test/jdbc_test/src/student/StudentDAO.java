@@ -245,8 +245,9 @@ public class StudentDAO {
 					+ "        score.score_semester AS scoreSemester,\r\n"
 					+ "        case when score.score_exam_type = 'M' then '중간고사'\r\n"
 					+ "			 when score.score_exam_type = 'F' then '기말고사' END AS scoreExamType,\r\n"
-					+ "        score.score_subject AS scoreSubject,\r\n"
-					+ "        score.score_point AS scorePoint\r\n"
+					+ "        score.score_subject AS scoreSubject,\r\n"					
+					+ "        score.score_point AS scorePoint,\r\n"
+					+ "        score.score_Idx AS scoreIdx\r\n"
 					+ "FROM tb_student_info student\r\n"
 					+ "LEFT JOIN tb_student_score score\r\n"
 					+ "ON student.student_idx = score.student_idx\r\n"
@@ -270,6 +271,7 @@ public class StudentDAO {
 				rsMap.put("scoreExamType", rs.getString("scoreExamType"));	
 				rsMap.put("scoreSubject", rs.getString("scoreSubject"));
 				rsMap.put("scorePoint", rs.getInt("scorePoint"));
+				rsMap.put("scoreIdx", rs.getInt("scoreIdx"));
 				
 				studentList.add(rsMap);
 
@@ -373,7 +375,7 @@ public class StudentDAO {
 	}
 	
 	// 학생 성적 수정
-	public int updateScore(HashMap<String, Object> paramMap) {
+	public int updateScore(int scoreIdx, int updateScore) {
 		int resultChk = 0;
 		
 		return resultChk;

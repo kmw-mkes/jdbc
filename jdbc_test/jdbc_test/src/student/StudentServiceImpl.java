@@ -230,17 +230,33 @@ public class StudentServiceImpl implements StudentService{
 	public void updateScore() {
 		System.out.print("성적을 수정할 학생의 이름을 입력해주세요>>>>>");
 		String studentName = sc.nextLine();
-		List<HashMap<String, Object>> studentList = new ArrayList();
-		studentList = studentDAO.printSearchStudent(studentName);
-		System.out.println("학교\t학생이름\t학년");
-		for(int i = 0; i<studentList.size(); i++) {
-			System.out.print(studentList.get(i).get("studentSchool")+"\t");
-			System.out.print(studentList.get(i).get("studentName")+"\t");
-			System.out.println(studentList.get(i).get("studentGrade"));
+		List<HashMap<String, Object>> list = new ArrayList();
+		list = studentDAO.printSearchStudent(studentName);
+		System.out.println("학교명\t\t학생이름\t학년\t주소\t연락처\t\t년도\t학기\t구분\t과목\t점수");
+		for(int i = 0; i<list.size(); i++) {
+			System.out.print(list.get(i).get("studentSchool")+"\t");
+			System.out.print(list.get(i).get("studentName")+"\t");
+			System.out.print(list.get(i).get("studentGrade")+"\t");
+			System.out.print(list.get(i).get("studentAddr")+"\t");
+			System.out.print(list.get(i).get("studentPhone")+"\t");
+			System.out.print(list.get(i).get("scoreSeason")+"\t");
+			System.out.print(list.get(i).get("scoreSemester")+"\t");
+			System.out.print(list.get(i).get("scoreExamType")+"\t");
+			System.out.print(list.get(i).get("scoreSubject")+"\t");
+			System.out.println(list.get(i).get("scorePoint")+"\t");
 		}
-		System.out.println("성적을 수정할 학생을 선택해주세요>>>>");
+		System.out.println("수정할 학생의 성적을 선택해주세요>>>>");
 		int choice = sc.nextInt();
-		int studentIdx = Integer.parseInt(studentList.get(choice-1).get("studentIdx").toString());
+		int scoreIdx = Integer.parseInt(list.get(choice-1).get("scoreIdx").toString());
+		System.out.println("수정할 점수를 입력해주세요>>>>>");
+		int updateScore = sc.nextInt();
+		int resultChk =0;
+		resultChk = studentDAO.updateScore(scoreIdx, updateScore);
+		if(resultChk > 0) {
+			System.out.println("수정완료");
+		}else {
+			System.out.println("수정실패");
+		}
 		
 		
 	}
