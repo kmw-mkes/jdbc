@@ -742,10 +742,10 @@ public class StudentDAO {
 				pstmt.setInt(1, studentIdx);
 				
 				rs = pstmt.executeQuery();
-				
 				while(rs.next()) {
-					cnt = rs.getInt(0);
+					cnt = rs.getInt("cnt");
 				}
+				
 				
 			}catch (SQLException e) {
 				// TODO: handle exception
