@@ -171,7 +171,6 @@ public class StudentDAO {
 			if(idx > 0) {
 				sql += "where student.student_idx = ?;";
 			}else {
-				System.out.println("없다");
 				sql += ";";
 			}
 
