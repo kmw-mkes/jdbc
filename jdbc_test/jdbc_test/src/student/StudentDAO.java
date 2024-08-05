@@ -136,7 +136,7 @@ public class StudentDAO {
 	}
 		
 	// 전체 학생 조회
-	public List<HashMap<String, Object>> printAllStudent(){
+	public List<HashMap<String, Object>> printAllStudent(int idx){
 		List<HashMap<String, Object>> studentList = new ArrayList();
 		
 		try {
@@ -167,9 +167,18 @@ public class StudentDAO {
 					+ "        score.score_point AS scorePoint\r\n"
 					+ "FROM tb_student_info student\r\n"
 					+ "LEFT JOIN tb_student_score score\r\n"
-					+ "ON student.student_idx = score.student_idx;";
+					+ "ON student.student_idx = score.student_idx\r\n";
+			if(idx > 0) {
+				sql += "where student.student_idx = ?;";
+			}else {
+				System.out.println("없다");
+				sql += ";";
+			}
 
 			pstmt = conn.prepareStatement(sql);
+			if(idx > 0) {
+				pstmt.setInt(1, idx);
+			}
 			
 			rs = pstmt.executeQuery();
 			
@@ -471,6 +480,54 @@ public class StudentDAO {
 	public int deleteScore(HashMap<String, Object> paramMap) {
 		int resultChk = 0;
 		
+		try {
+			Class.forName(driver);
+			conn = DriverManager.getConnection(db_url, "root", "1234");
+			if(conn != null) {
+
+			}
+		}catch(ClassNotFoundException e) {
+			System.out.println("드라이버 로드 실패");
+			e.printStackTrace();
+		}catch(SQLException e) {
+			System.out.println("접속 실패");
+			e.printStackTrace();
+		}
+		
+		try {
+			String sql = "DELETE FROM tb_student_score\r\n"
+					+ "WHERE score_season = ?\r\n"
+					+ "AND score_semester =?\r\n"
+					+ "AND score_exam_type =?\r\n"
+					+ "AND score_subject = ?\r\n"
+					+ "AND student_idx =?;";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, paramMap.get("season").toString());
+			pstmt.setInt(2, Integer.parseInt(paramMap.get("semester").toString()));
+			pstmt.setString(3, paramMap.get("examType").toString());
+			pstmt.setString(4, paramMap.get("subject").toString());
+			pstmt.setInt(5, Integer.parseInt(paramMap.get("studentIdx").toString()));
+			
+			resultChk = pstmt.executeUpdate();
+			
+		}catch (SQLException e) {
+			// TODO: handle exception
+			System.out.println("error :" + e);
+		}finally {
+			try {
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(conn != null && conn.isClosed()) {
+					conn.close();
+				}
+			
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		return resultChk;
 	}
 	
@@ -542,5 +599,170 @@ public class StudentDAO {
 			}
 			
 			return studentList;
+		}
+		
+		public List<HashMap<String, Object>> printSearchScore(int idx){
+			List<HashMap<String, Object>> scoreList = new ArrayList();
+			
+			try {
+				Class.forName(driver);
+				conn = DriverManager.getConnection(db_url, "root", "1234");
+				if(conn != null) {
+
+				}
+			}catch(ClassNotFoundException e) {
+				System.out.println("드라이버 로드 실패");
+				e.printStackTrace();
+			}catch(SQLException e) {
+				System.out.println("접속 실패");
+				e.printStackTrace();
+			}
+			
+			try {
+				String sql = "SELECT score_idx AS scoreIdx,\r\n"
+						+ "		score_season AS scoreSeason,\r\n"
+						+ "        score_semester AS scoreSemester,\r\n"
+						+ "        score_exam_type AS scoreExamType,\r\n"
+						+ "        score_subject AS scoreSubject,\r\n"
+						+ "        score_point AS scorePoint\r\n"
+						+ "FROM tb_student_score\r\n"
+						+ "where student_idx = ?;";
+
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, idx);
+				rs = pstmt.executeQuery();
+				
+				
+				while(rs.next()) {
+					HashMap<String, Object> rsMap = new HashMap<String, Object>();
+					rsMap.put("scoreIdx", rs.getInt("scoreIdx"));
+					rsMap.put("scoreSeason", rs.getString("scoreSeason"));
+					rsMap.put("scoreSemester", rs.getInt("scoreSemester"));
+					rsMap.put("scoreExamType", rs.getString("scoreExamType"));
+					rsMap.put("scoreSubject", rs.getString("scoreSubject"));
+					rsMap.put("scorePoint", rs.getInt("scorePoint"));
+					
+					scoreList.add(rsMap);
+
+				}
+
+			}catch (SQLException e) {
+				// TODO: handle exception
+				System.out.println("error :" + e);
+			}finally {
+				try {
+					if(rs != null) {
+						rs.close();
+					}
+					
+					if(pstmt != null) {
+						pstmt.close();
+					}
+					if(conn != null && conn.isClosed()) {
+						conn.close();
+					}
+				
+				}catch(SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			return scoreList;
+		}
+
+		public int deleteStudentScore(int studentIdx) {
+			// TODO Auto-generated method stub
+			int resultChk = 0;
+			
+			try {
+				Class.forName(driver);
+				conn = DriverManager.getConnection(db_url, "root", "1234");
+				if(conn != null) {
+
+				}
+			}catch(ClassNotFoundException e) {
+				System.out.println("드라이버 로드 실패");
+				e.printStackTrace();
+			}catch(SQLException e) {
+				System.out.println("접속 실패");
+				e.printStackTrace();
+			}
+			
+			try {
+				String sql = "DELETE FROM tb_student_score\r\n"
+						+ "WHERE student_idx =?;";
+
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, studentIdx);
+				
+				resultChk = pstmt.executeUpdate();
+				
+			}catch (SQLException e) {
+				// TODO: handle exception
+				System.out.println("error :" + e);
+			}finally {
+				try {
+					if(pstmt != null) {
+						pstmt.close();
+					}
+					if(conn != null && conn.isClosed()) {
+						conn.close();
+					}
+				
+				}catch(SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			return resultChk;
+		}
+
+		public int selectStudentScoreCnt(int studentIdx) {
+			int cnt = 0;
+			// TODO Auto-generated method stub
+			try {
+				Class.forName(driver);
+				conn = DriverManager.getConnection(db_url, "root", "1234");
+				if(conn != null) {
+
+				}
+			}catch(ClassNotFoundException e) {
+				System.out.println("드라이버 로드 실패");
+				e.printStackTrace();
+			}catch(SQLException e) {
+				System.out.println("접속 실패");
+				e.printStackTrace();
+			}
+			
+			try {
+				String sql = "SELECT COUNT(student_idx) AS cnt FROM tb_student_score\r\n"
+						+ "WHERE student_idx =?;";
+
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, studentIdx);
+				
+				rs = pstmt.executeQuery();
+				
+				while(rs.next()) {
+					cnt = rs.getInt(0);
+				}
+				
+			}catch (SQLException e) {
+				// TODO: handle exception
+				System.out.println("error :" + e);
+			}finally {
+				try {
+					if(pstmt != null) {
+						pstmt.close();
+					}
+					if(conn != null && conn.isClosed()) {
+						conn.close();
+					}
+				
+				}catch(SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			return cnt;
 		}
 }

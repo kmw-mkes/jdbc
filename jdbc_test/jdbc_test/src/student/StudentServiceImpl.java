@@ -217,13 +217,32 @@ public class StudentServiceImpl implements StudentService{
 		int studentIdx = Integer.parseInt(studentList.get(choice-1).get("studentIdx").toString());
 		
 		int resultChk = 0;
-		resultChk = studentDAO.deleteStudent(studentIdx);
-		
-		if(resultChk > 0) {
-			System.out.println("삭제완료");
+
+		int chk = studentDAO.selectStudentScoreCnt(studentIdx);
+		if(chk > 0) {
+			resultChk = studentDAO.deleteStudentScore(studentIdx);
+			if(resultChk > 0) {
+				resultChk = studentDAO.deleteStudent(studentIdx);
+				
+				if(resultChk > 0) {
+					System.out.println("삭제완료");
+				}else {
+					System.out.println("삭제실패");
+				}
+			}else {
+				System.out.println("삭제실패");
+			}
 		}else {
-			System.out.println("삭제실패");
+			resultChk = studentDAO.deleteStudent(studentIdx);
+			
+			if(resultChk > 0) {
+				System.out.println("삭제완료");
+			}else {
+				System.out.println("삭제실패");
+			}
 		}
+		
+		
 	}
 	
 	// 학생 성적 수정
@@ -264,6 +283,7 @@ public class StudentServiceImpl implements StudentService{
 	// 학생 성적 삭제
 	public void deleteScore() {
 		System.out.print("성적을 삭제할 학생의 이름을 입력해주세요>>>>>");
+		sc.nextLine();
 		String studentName = sc.nextLine();
 		List<HashMap<String, Object>> studentList = new ArrayList();
 		studentList = studentDAO.printSearchStudent(studentName);
@@ -276,7 +296,23 @@ public class StudentServiceImpl implements StudentService{
 		System.out.println("성적을 삭제할 학생을 선택해주세요>>>>");
 		int choice = sc.nextInt();
 		int studentIdx = Integer.parseInt(studentList.get(choice-1).get("studentIdx").toString());
+		/*
+		 * 선택한 학생의 성적 목록을 조회
+		 * 년도\t|학기\t|시험\t|과목\t|점수
+		 */
+		List<HashMap<String, Object>> scoreList = studentDAO.printAllStudent(studentIdx);
+		//List<HashMap<String, Object>> scoreList = studentDAO.printSearchScore(studentIdx);
+		System.out.println("년도\t|학기\t|시험\t|과목\t|점수");
+		for(int j=0; j<scoreList.size(); j++) {
+			System.out.print(scoreList.get(j).get("scoreSeason")+"\t");
+			System.out.print(scoreList.get(j).get("scoreSemester")+"\t");
+			System.out.print(scoreList.get(j).get("scoreExamType")+"\t");
+			System.out.print(scoreList.get(j).get("scoreSubject")+"\t");
+			System.out.println(scoreList.get(j).get("scorePoint"));
+		}
+		
 		System.out.print("삭제할 성적의 년도를 입력해주세요>>>>>");
+		sc.nextLine();
 		String season = sc.nextLine();
 		System.out.print("삭제할 성적의 학기를 입력해주세요>>>>>");
 		int semester = sc.nextInt();
@@ -307,7 +343,7 @@ public class StudentServiceImpl implements StudentService{
 	public void printAllStudent() {
 		System.out.println("학교명\t\t학생이름\t학년\t주소\t연락처\t\t년도\t학기\t구분\t과목\t점수");
 		List<HashMap<String, Object>> list = new ArrayList();
-		list = studentDAO.printAllStudent();
+		list = studentDAO.printAllStudent(0);
 		for(int i=0; i<list.size(); i++) {
 			System.out.print(list.get(i).get("studentSchool")+"\t");
 			System.out.print(list.get(i).get("studentName")+"\t");
