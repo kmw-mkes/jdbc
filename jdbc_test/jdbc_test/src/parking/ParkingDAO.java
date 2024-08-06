@@ -22,33 +22,111 @@ public class ParkingDAO {
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
 
-	public void insertParking(String location, String carNum) {
+	public int insertParking(int location, String carNum) {
+		int resultChk = 0;
 		
-//		for (int i=0; i<parkingNum.length; i++) {
-//			for (int j=0; j<parkingNum[i].length; j++) {
-//				if (location.equals(parkingNum[i][j])) {
-//					parkingSpace[i][j] = carNum;
-//				}
-//			}
-//		}
+		try {
+			Class.forName(driver);
+			conn = DriverManager.getConnection(db_url, "root", "1234");
+			if(conn != null) {
+			}
+		}catch(ClassNotFoundException e) {
+			System.out.println("드라이버 로드 실패");
+			e.printStackTrace();
+		}catch(SQLException e) {
+			System.out.println("접속 실패");
+			e.printStackTrace();
+		}
+		
+		try {
+			String sql = "UPDATE tb_parking_info\r\n"
+					+ "SET parking_yn = 'Y',\r\n"
+					+ "	parking_car_number = ?,\r\n"
+					+ "    parking_date = CURRENT_TIMESTAMP()\r\n"
+					+ "where parking_number = ?;";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, carNum);
+			pstmt.setInt(2, location);
+			
+			resultChk = pstmt.executeUpdate();
+			
+		}catch (SQLException e) {
+			// TODO: handle exception
+			System.out.println("error :" + e);
+		}finally {
+			try {
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(conn != null && conn.isClosed()) {
+					conn.close();
+				}
+			
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return resultChk;
 	}
 
-	public boolean deleteParking(String location) {
+	public int deleteParking(int location) {
+int resultChk = 0;
 		
-		boolean flag = true;
-//		
-//		for (int i=0; i<parkingNum.length; i++) {
-//			for (int j=0; j<parkingNum[i].length; j++) {
-//				if (location.equals(parkingNum[i][j]) && parkingSpace[i][j] != null) {
-//					parkingSpace[i][j] = null;
-//					return true;
-//				} else {
-//					flag = false;
-//				}
-//			}
-//		}
+		try {
+			Class.forName(driver);
+			conn = DriverManager.getConnection(db_url, "root", "1234");
+			if(conn != null) {
+			}
+		}catch(ClassNotFoundException e) {
+			System.out.println("드라이버 로드 실패");
+			e.printStackTrace();
+		}catch(SQLException e) {
+			System.out.println("접속 실패");
+			e.printStackTrace();
+		}
 		
-		return flag;
+		try {
+			String sql = "UPDATE tb_parking_info\r\n"
+					+ "SET parking_yn = 'N',\r\n"
+					+ "	parking_car_number = NULL,\r\n"
+					+ "    parking_date = CURRENT_TIMESTAMP()\r\n"
+					+ "where parking_number = ?;";
+
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setInt(1, location);
+			
+			resultChk = pstmt.executeUpdate();
+			
+		}catch (SQLException e) {
+			// TODO: handle exception
+			System.out.println("error :" + e);
+		}finally {
+			try {
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(conn != null && conn.isClosed()) {
+					conn.close();
+				}
+			
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return resultChk;
+
 	}
 
 	public List<HashMap<String, Object>> selectParkingSpace() {
@@ -58,7 +136,6 @@ public class ParkingDAO {
 			Class.forName(driver);
 			conn = DriverManager.getConnection(db_url, "root", "1234");
 			if(conn != null) {
-				System.out.println("접속성공");
 			}
 		}catch(ClassNotFoundException e) {
 			System.out.println("드라이버 로드 실패");
@@ -90,7 +167,7 @@ public class ParkingDAO {
 				parkingMap.put("parkingX", rs.getInt("parkingX"));
 				parkingMap.put("parkingY", rs.getInt("parkingY"));
 				parkingMap.put("parkingYn", rs.getString("parkingYn"));
-				parkingMap.put("parkingCarNumber", rs.getInt("parkingCarNumber"));
+				parkingMap.put("parkingCarNumber", rs.getString("parkingCarNumber"));
 				
 				parkingList.add(parkingMap);
 			}
@@ -118,6 +195,120 @@ public class ParkingDAO {
 		
 		return parkingList;
 
+	}
+	
+	public HashMap<String, Object> selectParkingInfo(int location){
+		HashMap<String, Object> parkingMap = new HashMap<String, Object>();
+		try {
+			Class.forName(driver);
+			conn = DriverManager.getConnection(db_url, "root", "1234");
+			if(conn != null) {
+			}
+		}catch(ClassNotFoundException e) {
+			System.out.println("드라이버 로드 실패");
+			e.printStackTrace();
+		}catch(SQLException e) {
+			System.out.println("접속 실패");
+			e.printStackTrace();
+		}
+		
+		try {
+			String sql = "SELECT  parking_number AS parkingNumber, \r\n"
+					+ "		parking_car_number AS parkingCarNumber, \r\n"
+					+ "		parking_yn AS parkingYn\r\n"
+					+ "FROM tb_parking_info\r\n"
+					+ "where parking_number = ?;";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, location);
+			
+			rs = pstmt.executeQuery();
+			
+			
+			while(rs.next()) {
+				parkingMap.put("parkingNumber", rs.getInt("parkingNumber"));
+				parkingMap.put("parkingCarNumber", rs.getInt("parkingCarNumber"));
+				parkingMap.put("parkingYn", rs.getString("parkingYn"));				
+			}
+
+		}catch (SQLException e) {
+			// TODO: handle exception
+			System.out.println("error :" + e);
+		}finally {
+			try {
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(conn != null && conn.isClosed()) {
+					conn.close();
+				}
+			
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return parkingMap;
+	}
+	
+	public void insertParkingHistory(int location, String carNum, String type) {
+		try {
+			Class.forName(driver);
+			conn = DriverManager.getConnection(db_url, "root", "1234");
+			if(conn != null) {
+			}
+		}catch(ClassNotFoundException e) {
+			System.out.println("드라이버 로드 실패");
+			e.printStackTrace();
+		}catch(SQLException e) {
+			System.out.println("접속 실패");
+			e.printStackTrace();
+		}
+		
+		try {
+			String sql = "INSERT INTO tb_parking_history(\r\n"
+					+ "	parking_location,\r\n"
+					+ "    parking_car_number,\r\n"
+					+ "    parking_type,\r\n"
+					+ "    parking_time\r\n"
+					+ ") values(\r\n"
+					+ "	?,\r\n"
+					+ "    ?,\r\n"
+					+ "    ?,\r\n"
+					+ "    current_timestamp()\r\n"
+					+ ");";
+
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setInt(1, location);
+			pstmt.setString(2, carNum);
+			pstmt.setString(3, type);
+			
+			pstmt.executeUpdate();
+			
+		}catch (SQLException e) {
+			// TODO: handle exception
+			System.out.println("error :" + e);
+		}finally {
+			try {
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(conn != null && conn.isClosed()) {
+					conn.close();
+				}
+			
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
